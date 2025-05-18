@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Hello</h1>
+<p> {{ data['message'] }}</p>
+
+{% for user in users %}
+<h1>
+   {{  user['name']}}
+</h1>
+{% if user['city'] == 'Київ'%}
+    <p> Київський</p>
+{%endif%}
+{% endfor %}
+</body>
+</html>

@@ -3,11 +3,24 @@ from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
+from starlette.requests import Request
+from starlette.templating import Jinja2Templates
+
 app = FastAPI()
-
+templates = Jinja2Templates(directory="templates")
 # Список користувачів
-users: List[dict] = []
+users: List[dict] = [
+    {"id": 1, "name": "Олена Іваненко", "email": "olena@example.com", "city": "Київ"},
+    {"id": 2, "name": "Андрій Петренко", "email": "andriy@example.com", "city": "Львів"},
+    {"id": 3, "name": "Марія Коваленко", "email": "maria@example.com", "city": "Одеса"},
+]
 
+@app.get("/")
+def read_root(request: Request):
+    # Дані, які будуть передані в шаблон
+    data = {"message": "Hello, World!"}
+    # Відображення сторінки з використанням Jinja2
+    return templates.TemplateResponse("index.html", {"request": request, "data": data, "users": users})
 # Лічильник для генерації унікальних ID
 next_id = 1
 
@@ -30,7 +43,7 @@ async def create_user(user: UserCreate):
     if any(u["email"] == user.email for u in users):
         raise HTTPException(status_code=400, detail="Користувач з таким email вже існує")
 
-    user_dict = user.dict()
+    user_dict = user.model_dump()
     user_dict["id"] = next_id
     next_id += 1
 
