@@ -22,8 +22,7 @@ def read_root(request: Request):
     # Відображення сторінки з використанням Jinja2
     return templates.TemplateResponse("index.html", {"request": request, "data": data, "users": users})
 # Лічильник для генерації унікальних ID
-next_id = 1
-
+next_id = 4
 # Модель для створення користувача
 class UserCreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=50, description="Ім'я користувача")
@@ -58,6 +57,7 @@ async def get_users(city: Optional[str] = Query(None, description="Фільтр 
         if not filtered:
             raise HTTPException(status_code=404, detail="Користувачі не знайдені")
         return filtered
+
     return users
 
 # Оновлення користувача за ID
@@ -65,7 +65,7 @@ async def get_users(city: Optional[str] = Query(None, description="Фільтр 
 async def update_user(user_id: int, user_data: UserCreate):
     for u in users:
         if u["id"] == user_id:
-            u.update(user_data.dict())
+            u.update(user_data.model_dump())
             return u
     raise HTTPException(status_code=404, detail="Користувача не знайдено")
 
